@@ -29,4 +29,11 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/Gretchen-z/http-server</url>
+        </repository>
+    </distributionManagement>
+
 </project>
