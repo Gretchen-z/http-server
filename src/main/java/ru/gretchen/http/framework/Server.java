@@ -161,6 +161,25 @@ public class Server {
     service.shutdownNow();
   }
 
+  public static HashMap<String, List<String>> queryParsing (String uri) {
+    final var decoderUri = URLDecoder.decode(uri, StandardCharsets.UTF_8);
+    var queryParams = decoderUri.split("\\?")[1];
+    final var query = new HashMap<String, List<String>>();
+    if (queryParams != null) {
+      for (String queryParam : queryParams.split("&")) {
+        var keyValue = queryParam.split("=");
+        var key = keyValue[0];
+        var value = keyValue[1];
+
+        if (!query.containsKey(key)) {
+          query.put(key, new ArrayList<>());
+        }
+        query.get(key).add(value);
+      }
+    }
+    return query;
+  }
+
   public void handle(final Socket socket) {
     try (
         socket;
@@ -187,22 +206,8 @@ public class Server {
         final var method = requestLineParts[0];
         // TODO: uri split ? -> URLDecoder
         final var uri = requestLineParts[1];
-        final var decoderUri = URLDecoder.decode(uri, StandardCharsets.UTF_8);
 
-        var queryParams = decoderUri.split("\\?")[1];
-        final var query = new HashMap<String, List<String>>();
-        if (queryParams != null) {
-          for (String queryParam : queryParams.split("&")) {
-            var keyValue = queryParam.split("=");
-            var key = keyValue[0];
-            var value = keyValue[1];
-
-            if (!query.containsKey(key)) {
-              query.put(key, new ArrayList<>());
-            }
-            query.get(key).add(value);
-          }
-        }
+        final var query = queryParsing(uri);
 
         final var headersEndIndex = Bytes.indexOf(buffer, CRLFCRLF, requestLineEndIndex, read) + CRLFCRLF.length;
         if (headersEndIndex == 3) {
