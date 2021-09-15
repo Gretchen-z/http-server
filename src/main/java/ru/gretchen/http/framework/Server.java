@@ -183,7 +183,7 @@ public class Server {
   public static HashMap<String, List<String>> formParsing (HashMap<String, String> headers, byte[] body) {
     final var form = new HashMap<String, List<String>>();
     String contentType = headers.get("Content-type");
-    if (contentType == "application/x-www-form-urlencoded") {
+    if (contentType.equals("application/x-www-form-urlencoded")) {
       String formData = URLDecoder.decode(new String(body), StandardCharsets.UTF_8);
 
       for (String formPair : formData.split("&")) {
