@@ -180,6 +180,26 @@ public class Server {
     return query;
   }
 
+  public static HashMap<String, List<String>> formParsing (HashMap<String, String> headers, byte[] body) {
+    final var form = new HashMap<String, List<String>>();
+    String contentType = headers.get("Content-type");
+    if (contentType == "application/x-www-form-urlencoded") {
+      String formData = URLDecoder.decode(new String(body), StandardCharsets.UTF_8);
+
+      for (String formPair : formData.split("&")) {
+        var keyValue = formPair.split("=");
+        var key = keyValue[0];
+        var value = keyValue[1];
+
+        if (!form.containsKey(key)) {
+          form.put(key, new ArrayList<>());
+        }
+        form.get(key).add(value);
+      }
+    }
+    return form;
+  }
+
   public void handle(final Socket socket) {
     try (
         socket;
@@ -244,22 +264,7 @@ public class Server {
         in.skipNBytes(headersEndIndex);
         final var body = in.readNBytes(contentLength);
 
-        final var form = new HashMap<String, List<String>>();
-        String contentType = headers.get("Content-type");
-        if (contentType == "application/x-www-form-urlencoded") {
-          String formData = URLDecoder.decode(new String(body), StandardCharsets.UTF_8);
-
-          for (String formPair : formData.split("&")) {
-            var keyValue = formPair.split("=");
-            var key = keyValue[0];
-            var value = keyValue[1];
-
-            if (!form.containsKey(key)) {
-              form.put(key, new ArrayList<>());
-            }
-            form.get(key).add(value);
-          }
-        }
+        final var form = formParsing(headers, body);
 
         // TODO: annotation monkey
         final var request = Request.builder()
