@@ -268,12 +268,13 @@ public class Server {
 
         // TODO: annotation monkey
         final var request = Request.builder()
-            .method(method)
-            .path(uri)
-            .query(query)
-            .headers(headers)
-            .body(body)
-            .build();
+                .method(method)
+                .path(uri)
+                .query(query)
+                .form(form)
+                .headers(headers)
+                .body(body)
+                .build();
 
         final var response = out;
 

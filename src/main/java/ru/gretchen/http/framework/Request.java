@@ -13,6 +13,7 @@ public class Request {
   String path;
   // TODO: query
   Map<String, List<String>> query;
+  Map<String, List<String>> form;
   Map<String, String> headers;
   @Builder.Default
   byte[] body = new byte[]{};
